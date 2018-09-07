@@ -1,9 +1,7 @@
 ## Advanced Lane Finding Project
 [![Udacity - Self-Driving Car NanoDegree](https://s3.amazonaws.com/udacity-sdc/github/shield-carnd.svg)](http://www.udacity.com/drive)
 
-https://www.youtube.com/watch?v=bdHtsbaUso8
-[![Finding Lane Lines](http://img.youtube.com/vi/bdHtsbaUso8/0.jpg)](https://www.youtube.com/watch?v=bdHtsbaUso8&feature=youtu.be&hd=1 "Advanced Lane Lines")
-
+[![identifying-lane-lines-youtube-video](http://img.youtube.com/vi/bdHtsbaUso8/0.jpg)](http://www.youtube.com/watch?v=bdHtsbaUso8 "Finding Lane Lines for Autonomous Driving")
 
 ## Table of Contents
 * [Project Description](#the-project)
