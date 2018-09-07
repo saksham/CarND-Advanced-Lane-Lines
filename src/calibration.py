@@ -8,9 +8,13 @@ import cv2
 import numpy as np
 
 from src import utils
-from src.utils import logger, CHESS_BOARD_PATTERN_SIZE, CALIBRATION_IMAGES_LOCATION
+from src.utils import logger
 
 CalibrationImage = namedtuple('CalibrationImage', ['filename', 'gray', 'img_pts', 'obj_pts'])
+
+# Constants
+CALIBRATION_IMAGES_LOCATION = "data/camera_cal/*.jpg"
+CHESS_BOARD_PATTERN_SIZE = (9, 6)
 
 
 class Camera(object):
@@ -73,7 +77,7 @@ class Camera(object):
         img_size = (img.shape[1], img.shape[0])
         return cv2.warpPerspective(undistorted, perspective_transform_matrix, img_size, flags=cv2.INTER_LINEAR)
 
-    def perform_perspective_transform(self, img, src, dst):
+    def perform_perspective_transform(self, img, src, dst, mark_with_circles=False):
         src_arr = utils.to_array(src, np.float32)
         dst_arr = utils.to_array(dst, np.float32)
 
@@ -85,4 +89,10 @@ class Camera(object):
         warped = self.warp_image(img, perspective_transform_matrix)
         cv2.polylines(undistorted, np.int_([src]), True, (255, 0, 0), thickness=4)
         cv2.polylines(warped, np.int_([dst]), True, (255, 0, 0), thickness=4)
+
+        if mark_with_circles:
+            for s in src:
+                cv2.circle(undistorted, s, 20, [255, 0, 255], -1)
+            for d in dst:
+                cv2.circle(warped, tuple(d), 20, [255, 0, 255], -1)
         return undistorted, warped, perspective_transform_matrix

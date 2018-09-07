@@ -10,8 +10,10 @@ from matplotlib import pyplot as plt
 # img = mpimg.imread('examples/straight_lines1.jpg')
 
 # measured lane marking for calculating curvature
-img = mpimg.imread('output_images/test5.jpg.2.warped_orig.jpg')
-print('Lane is approx {} metres'.format(math.sqrt((1122 - 1134) ** 2 + (668 - 557) ** 2)))
+img = mpimg.imread('output/images/test5.jpg.2.warped_orig.jpg')
+print('Distances is approx {} and {} pixels in X and Y directions respectively'.format(1167.92 - 169.8, 673-554))
+
+
 
 plt.imshow(img)
 plt.show()

@@ -7,10 +7,6 @@ import os
 import numpy as np
 from matplotlib import pyplot as plt
 
-# Constants
-CALIBRATION_IMAGES_LOCATION = "camera_cal/*.jpg"
-CHESS_BOARD_PATTERN_SIZE = (9, 6)
-
 logger = logging.getLogger('advanced-lane-lines')
 FORMAT = '%(levelname)s %(message)s'
 logging.basicConfig(format=FORMAT)
@@ -18,11 +14,11 @@ LOG_LEVEL = os.getenv('LOG_LEVEL', 'INFO')
 logger.setLevel(LOG_LEVEL)
 
 
-def plot_images(images_with_captions):
+def plot_images(images_with_captions, fig_size=(24, 9)):
     cols = len(images_with_captions)
     rows = len(images_with_captions[0]) if type(images_with_captions[0]) == list else 1
 
-    f, axes = plt.subplots(rows, cols, figsize=(24, 9))
+    f, axes = plt.subplots(rows, cols, figsize=fig_size)
 
     f.tight_layout()
     for i in range(cols):
@@ -59,12 +55,23 @@ def rectangle_pts_inside_image(img, x_offset=200, y_offset=0):
     ]
 
 
-def bgr2rgb(image):
-    return image[:, :, ::-1]
-
-
 def to_array(list_or_array, dtype=np.int32):
     if type(list_or_array) == np.ndarray:
         return list_or_array
 
     return np.array(list_or_array, dtype=dtype)
+
+
+def to_three_channels(single_channel):
+    return np.dstack((single_channel, single_channel, single_channel))
+
+
+def generate_line_pts(imshape, best_fit, factor=1):
+    y = np.int_(np.linspace(0, imshape[0] - 1, imshape[0] // factor))
+    x = np.int_(best_fit[0] * (y ** 2) + best_fit[1] * y + best_fit[2])
+    return x, y
+
+
+def normalise_pixel_values(img, factor=255.0):
+    max_pixel = np.max(img) / factor
+    return (img / max_pixel).astype(np.uint8)
