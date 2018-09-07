@@ -161,12 +161,28 @@ I implemented this step in lines # through # in my code in `yet_another_file.py`
 
 #### 1. Provide a link to your final video output.  Your pipeline should perform reasonably well on the entire project video (wobbly lines are ok but no catastrophic failures that would cause the car to drive off the road!).
 
+TODO: add comment about how I debugged. Comment about thresholding.
+
 Here's a [link to my video result](./project_video.mp4)
 
 ---
 
 ### Discussion
 
-#### 1. Briefly discuss any problems / issues you faced in your implementation of this project.  Where will your pipeline likely fail?  What could you do to make it more robust?
+Here is a brief discussion about the approach I took, what techniques I used, what worked and why, where the pipeline 
+might fail and how I might improve it if I were going to pursue this project further.
 
-Here I'll talk about the approach I took, what techniques I used, what worked and why, where the pipeline might fail and how I might improve it if I were going to pursue this project further.  
+* Speed - Slow (4 frames per second, but this could be higher)
+* Take into account the curvature of the lane lines in relation to one another and compared with the previously aggregated values to find
+  out confidence. We are using curvature calculation to disregard outliers. Similarly, we could probably also integrate 
+  the offset information. All of these could be used to compute a adaptive score, much better than mere
+  average or median to detect outliers. In the harder challenge, the lanes are almost 
+                                          horizontal in some frames even after perspective transform.
+* Due to the use of median filter, the response to lane curvature changes is slightly delayed. This has an impact
+ on the performance of the detector on the harder challenge video because the changes are quite big. 
+* The same thresholding values as that for challenge_video worked for the harder challenge to get the lanes in
+warped binary image, but due to changing lighting conditions, the image is very noisy. Maybe, we could use a notion of
+"noise level" in an image into the lane detection pipeline so that we could disregard best fit lines which might
+succesfully fit a best fit line, but the line might be capturing some other artifact. We could extend this concept a bit further
+to **adapting the thresholds** in the image based on the "noise level".
+ 
