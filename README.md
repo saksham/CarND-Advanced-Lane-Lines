@@ -1,6 +1,18 @@
 ## Advanced Lane Finding Project
 [![Udacity - Self-Driving Car NanoDegree](https://s3.amazonaws.com/udacity-sdc/github/shield-carnd.svg)](http://www.udacity.com/drive)
 
+https://www.youtube.com/watch?v=bdHtsbaUso8
+[![Finding Lane Lines](http://img.youtube.com/vi/bdHtsbaUso8/0.jpg)](https://www.youtube.com/watch?v=bdHtsbaUso8&feature=youtu.be&hd=1 "Advanced Lane Lines")
+
+
+## Table of Contents
+* [Project Description](#the-project)
+* [What's in this repo](#what's-in-this-repo)
+* [Camera calibration](#camera-calibration)
+* [Pipeline (single images)](#pipeline-(single-images))
+* [Pipeline (video)](#pipeline-(video))
+* [Discussion](#discussion) 
+
 ## The Project
 
 The goals/steps of this project were the following:
@@ -15,13 +27,6 @@ The goals/steps of this project were the following:
 * Output visual display of the lane boundaries and numerical estimation of lane curvature and vehicle position.
 
 This README is structured around the [Rubric](https://review.udacity.com/#!/rubrics/571/view) points for the project.
-
-## Table of Contents
-* [What's in this repo](#what's-in-this-repo)
-* [Camera calibration](#camera-calibration)
-* [Pipeline (single images)](#pipeline-(single-images))
-* [Pipeline (video)](#pipeline-(video))
-* [Discussion](#discussion) 
 
 ## What's in this Repo
 
