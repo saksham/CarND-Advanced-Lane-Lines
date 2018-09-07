@@ -46,7 +46,7 @@ conda env create -f environment.yml
 
 ---
 
-[//]: # (Image References)
+[//]: #(Image References)
 [distortion-correction]: ./data/output/images/calibration/distortion-correction.png "Distortion correction applied to chess board image"
 [image3]: ./examples/binary_combo_example.jpg "Binary Example"
 [image4]: ./examples/warped_straight_lines.jpg "Warp Example"
@@ -80,7 +80,7 @@ The lists of `objpoints` and `imgpoints` are used to compute the camera calibrat
 `cv2.calibrateCamera` function from OpenCV. Then, distortion correction can be applied to any image using 
 `cv2.undistort` function. Here is an example of how distortion correction is applied to one of the chess board images.
  
-![Original chess board][original-chess-board] ![Undistorted chess board][undistorted-chess-board]
+![undistorted-chess-board][distortion-correction]
 
 Notice how the top central boxes in the chess board appear to have been "straightened" after this
 distortion correction.
