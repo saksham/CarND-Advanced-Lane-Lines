@@ -46,10 +46,10 @@ conda env create -f environment.yml
 
 ---
 
-[//]: #(Image References)
-[distortion-correction]: ./data/output/images/calibration/distortion-correction.png "Distortion correction applied to chess board image"
-[image3]: ./examples/binary_combo_example.jpg "Binary Example"
-[image4]: ./examples/warped_straight_lines.jpg "Warp Example"
+[//]: # (Image References)
+[distortion-correction-chess-board]: ./output/images/calibration/distortion-correction-chess-board.jpg "Distortion correction applied to chess board image"
+[thresholded-lane-lines]: ./output/images/thresholding/test-images.jpg "Example of binary images"
+[distortion-correction-lane-lines]: ./output/images/lane-detection/distortion-correction-lanes.jpg "Distortion correction on lane lines"
 [image5]: ./examples/color_fit_lines.jpg "Fit Visual"
 [image6]: ./examples/example_output.jpg "Output"
 [video1]: ./project_video.mp4 "Video"
@@ -59,7 +59,8 @@ conda env create -f environment.yml
 ### Camera Calibration
 
 The code for camera calibration can be found in the `calibrate` function inside [src/calibration.py](src/calibration.py) 
-file. Calibration can be performed as follows, as being done in the IPython notebook
+file. Calibration can be performed as follows. The same lines of code are also used in the example IPython notebook.
+
 [exploration.ipynb](exploration.ipynb).
 
 ```python
@@ -82,22 +83,31 @@ The lists of `objpoints` and `imgpoints` are used to compute the camera calibrat
  
 ![undistorted-chess-board][distortion-correction]
 
-Notice how the top central boxes in the chess board appear to have been "straightened" after this
+Notice how the top central boxes in the chess board appear to have been slightly "straightened" after this
 distortion correction.
 
 
 ### Pipeline (single images)
 
-#### 1. An example of a distortion-corrected image.
+These are the steps taken to find lane markings in a single image. The same function is invoked for processing
+individual frames from the videos later.
 
-To demonstrate this step, I will describe how I apply the distortion correction to one of the test images like this one:
-![alt text][image2]
 
-#### 2. Describe how (and identify where in your code) you used color transforms, gradients or other methods to create a thresholded binary image.  Provide an example of a binary image result.
+#### 1. Thresholding to Create Binary Images
 
-I used a combination of color and gradient thresholds to generate a binary image (thresholding steps at lines # through # in `another_file.py`).  Here's an example of my output for this step.  (note: this is not actually from one of the test images)
+I used a combination of color and gradient thresholds to generate a binary image (in `threshold` function in 
+[Thresholder class in thresholding module](src/thresholding.py)).  Here is an example of my output for this step.
 
-![alt text][image3]
+
+We can see more examples of the effect of thresholding in [output/images/thresholding folder](output/images/thresholding).
+The originals and binary images have the corresponding identifiers in their file names.
+
+#### 2. Distortion Correction
+
+The distortion introduced in the images due to the lens in camera needs to be corrected. Hence, we need to call 
+`cv2.undistort` inside [undistort function](src/calibration.py) once the camera has been calibrated. Here is an example
+of an undistorted example image.
+
 
 #### 3. Describe how (and identify where in your code) you performed a perspective transform and provide an example of a transformed image.
 
