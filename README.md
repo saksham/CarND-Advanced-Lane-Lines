@@ -1,10 +1,12 @@
 ## Advanced Lane Finding Project
 [![Udacity - Self-Driving Car NanoDegree](https://s3.amazonaws.com/udacity-sdc/github/shield-carnd.svg)](http://www.udacity.com/drive)
 
+Finding lane lines in a video from camera mounted on a car for Udacity Self-Driving Car Nanodegree program.
+
 [![identifying-lane-lines-youtube-video](http://img.youtube.com/vi/bdHtsbaUso8/0.jpg)](http://www.youtube.com/watch?v=bdHtsbaUso8 "Finding Lane Lines for Autonomous Driving")
 
 ## Table of Contents
-* [Project Description](#the-project)
+* [The Project](#the-project)
 * [What's in this repo](#what's-in-this-repo)
 * [Camera calibration](#camera-calibration)
 * [Pipeline (single images)](#pipeline-(single-images))
@@ -44,24 +46,12 @@ Udacity](https://github.com/udacity/CarND-Term1-Starter-Kit.git).
 conda env create -f environment.yml
 ```
 
----
-
-[//]: # (Image References)
-[distortion-correction-chess-board]: ./output/images/calibration/distortion-correction-chess-board.jpg "Distortion correction applied to chess board image"
-[thresholded-lane-lines]: ./output/images/thresholding/test-images.jpg "Example of binary images"
-[distortion-correction-lane-lines]: ./output/images/lane-detection/distortion-correction-lanes.jpg "Distortion correction on lane lines"
-[image5]: ./examples/color_fit_lines.jpg "Fit Visual"
-[image6]: ./examples/example_output.jpg "Output"
-[video1]: ./project_video.mp4 "Video"
-
 
 <a name="camera-calibration"></a>
 ### Camera Calibration
 
 The code for camera calibration can be found in the `calibrate` function inside [src/calibration.py](src/calibration.py) 
-file. Calibration can be performed as follows. The same lines of code are also used in the example IPython notebook.
-
-[exploration.ipynb](exploration.ipynb).
+file. Calibration can be performed as follows. The same lines of code are also used in the example IPython notebook [exploration.ipynb](exploration.ipynb).
 
 ```python
 from src import calibration
@@ -81,7 +71,7 @@ The lists of `objpoints` and `imgpoints` are used to compute the camera calibrat
 `cv2.calibrateCamera` function from OpenCV. Then, distortion correction can be applied to any image using 
 `cv2.undistort` function. Here is an example of how distortion correction is applied to one of the chess board images.
  
-![undistorted-chess-board][distortion-correction]
+![distortion-corrected-chess-board](output/images/calibration/distortion-correction-chess-board.jpg)
 
 Notice how the top central boxes in the chess board appear to have been slightly "straightened" after this
 distortion correction.
@@ -95,12 +85,14 @@ individual frames from the videos later.
 
 #### 1. Thresholding to Create Binary Images
 
-I used a combination of color and gradient thresholds to generate a binary image (in `threshold` function in 
-[Thresholder class in thresholding module](src/thresholding.py)).  Here is an example of my output for this step.
+A combination of color and gradient thresholds to generate a binary image (in `threshold` function in [Thresholder class in thresholding module](src/thresholding.py)). What worked best in the test video was thresholding based on absolute values and applying Sobel filter on S channel from the [HLS colorspace](https://en.wikipedia.org/wiki/HLS_color_space) and R channel from RGB color space. It turns out that the same thresholds did not work equally well for challenge video. The actual values of the thresholds for each video can be found in the [src/config.py file](src/config.py).
 
+Here is an example of my output for this step operated on all example images.
 
-We can see more examples of the effect of thresholding in [output/images/thresholding folder](output/images/thresholding).
-The originals and binary images have the corresponding identifiers in their file names.
+![Thresholded lane lines](output/images/thresholding/thresholded-examples.jpg)
+
+To see the effect of thresholding for individual images, please refer to [output/images/thresholding folder](output/images/thresholding). The originals and binary images have the corresponding identifiers in their file names.
+
 
 #### 2. Distortion Correction
 
