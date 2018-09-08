@@ -208,5 +208,7 @@ warped binary image, but due to changing lighting conditions, the image is very 
 "noise level" in an image into the lane detection pipeline so that we could disregard best fit lines which might
 succesfully fit a best fit line, but the line might be capturing some other artifact. We could extend this concept a bit further
 to **adapting the thresholds** in the image based on the "noise level".
- 
+
+For challenge videos, the lane markings is not distinguished easily from the edge of the road or some artifacts. For instance, the challenge video has a black tar line in between the lanes. Sometimes the lane detector identifies this as the lane line. Result of processing on challenge and harder-challenge videos can also be found in [output/videos](output/videos) folder.
+
 Furthermore, I could achieve processing speed of around 3-4 FPS. The pipeline could probably be optimised a bit more for speed, for instance by not plotting or storing intermediary images. 
