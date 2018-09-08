@@ -272,7 +272,7 @@ class LaneDetector(object):
         right_x = right_fit[0] * (y_eval ** 2) + right_fit[1] * y_eval + right_fit[2]
         return (self._img_shape[1] - (right_x + left_x)) / 2 * X_M_PER_PIX
 
-    def detect(self, img):
+    def map_lanes(self, img):
         # Apply thresholds
         im_thresholded = self._thresholder.threshold(img)
 

@@ -79,7 +79,7 @@ distortion correction.
 
 ### Pipeline (single images)
 
-These are the steps taken to find lane markings in a single image. The same function is invoked for processing individual frames from the videos later. The pipeline can be found in `detect` function inside `LaneDetector` class in `src/lane_detection.py`.
+These are the steps taken to find lane markings in a single image. The same function is invoked for processing individual frames from the videos later. The pipeline can be found in `map_lanes` function inside `LaneDetector` class in `src/lane_detection.py`.
 
 
 #### 1. Thresholding to Create Binary Images
@@ -92,7 +92,7 @@ Here is an example of my output for this step operated on some test images.
 
 To see the effect of thresholding for individual images, please refer to [output/images/thresholding](output/images/thresholding) folder. The originals and binary images have the corresponding identifiers in their file names.
 
-The code which performs thresholding on the test image looks like this inside the `detect` function. Notice that we instantiate `Thresholder` class to encapsulate thresholding logic.
+The code which performs thresholding on the test image looks like this inside the `map_lanes` function. Notice that we instantiate `Thresholder` class to encapsulate thresholding logic.
 
 ```python
 im_thresholded = self._thresholder.threshold(img)
@@ -109,61 +109,82 @@ Below is an example of distortion correction applied to a test image.
 
 #### 3. Perspective Transform
 
-Source points
-
-For simplicity, the `Camera` class exposes `warp_image` function, which internally performs the distortion correction. Distortion correction is applied by the following lines in the `detect` function in `LaneDetector`.  
-
-```python
-im_warped = self._camera.warp_image(im_thresholded.astype(np.float), self._perspective_transform_mat)
-```
-
-Here is the result of perspective transformation applied a test image.
-
-<img src="output/images/lane-detection/test2.original.jpg" width="400" /> <img src="output/images/lane-detection/test2.warped.jpg" width="400" />
-
-The code for my perspective transform includes a function called `warper()`, which appears in lines 1 through 8 in the file `example.py` (output_images/examples/example.py) (or, for example, in the 3rd code cell of the IPython notebook).  The `warper()` function takes as inputs an image (`img`), as well as source (`src`) and destination (`dst`) points.  I chose the hardcode the source and destination points in the following manner:
-
-```python
-```
+One of the example images were used to mark source and destination points for the perspective transformation. Coordinates of the pixels on the lanes were used as *source* and *200 px* inside the width of the image were used as destination using `rectangle_pts_inside_image` in `src/utils.py`.
 
 This resulted in the following source and destination points:
 
 | Source        | Destination   | 
 |:-------------:|:-------------:| 
-| 585, 460      | 320, 0        | 
-| 203, 720      | 320, 720      |
-| 1127, 720     | 960, 720      |
-| 695, 460      | 960, 0        |
+| (242,691)      | (250, 720)   | 
+| (1058, 691)    | (1030, 720)  |
+| (706, 464)     | (1030, 0)    |
+| (576, 464)     | (250, 0)     |
+
+
+The points are overlaid on the example image and the unwarped image below.
+
+![undistored-lane-image](output/images/calibration/undistorted-lane-lines.jpg)
 
 I verified that my perspective transform was working as expected by drawing the `src` and `dst` points onto a test image and its warped counterpart to verify that the lines appear parallel in the warped image.
 
-![alt text][image4]
+For simplicity, the `Camera` class exposes `warp_image` function, which internally performs the distortion correction. Distortion correction is applied by the following lines in the `map_lanes` function in `LaneDetector`.  
 
-#### 4. Describe how (and identify where in your code) you identified lane-line pixels and fit their positions with a polynomial?
+```python
+im_warped = self._camera.warp_image(im_thresholded.astype(np.float), self._perspective_transform_mat)
+```
 
-Then I did some other stuff and fit my lane lines with a 2nd order polynomial kinda like this:
+Here is the result of perspective transformation and thresholding applied on a test image.
 
-![alt text][image5]
+![thresholded-and-undistorted](output/images/lane-detection/thresholded-and-unwarped.jpg)
 
-#### 5. Describe how (and identify where in your code) you calculated the radius of curvature of the lane and the position of the vehicle with respect to center.
 
-I did this in lines # through # in my code in `my_other_file.py`
+#### 4. Identifying lane pixels and Fitting Polynomial
 
-#### 6. Provide an example image of your result plotted back down onto the road such that the lane area is identified clearly.
+After thresholding and applying perspective transformation on the image, histogram was calculated by summing up all the non-zero pixels across X-direction in the image. This gives the x-coordinate where the lane lines could be. 
 
-I implemented this step in lines # through # in my code in `yet_another_file.py` in the function `map_lane()`.  Here is an example of my result on a test image:
+The pixels in a sliding window, configured via `src/config.py` were considered for further calculation. The height of the window was calculated based on the number of windows to use along the height of an image, also configured via `config.py`. For the test images, the values were `100px` and `10` respectively. Only the coordinates of the bottom-most sliding window is derived from the histogram. For the next window above the bottom-most one, the number of non-zero pixels is counted. If the number of pixels found in the window is greater than a certain threshold (`minpix` in `config.py`), the next window was centered at the center of all the detected points. The code for the sliding window can be found in `_find_lane_px_using_sliding_windows` method in `LaneDetector` class in `src/lane_detection.py`.   
 
-![alt text][image6]
+The pixels are used together with `np.polyfit` method to find the best fitting second order polynomial. Detected lane pixels are stored using `update` method in `Lane` class found in `src/lane_detection.py`.
 
+For subsequent images, instead of using sliding window, the region around the polynomial is used for detecting lane pixels within a given margin (in `_find_lane_px_using_poly` method in `LaneDetector` class in `src/lane_detection.py`). This is particularly important for detecting lanes in subsequent frames in a video.
+
+The `find_lane_pixels` method of `LaneDetector` uses polynomial based or sliding-window based search depending on whether a best-fit polynomial was detected in earlier frame. For the test images, only sliding-window method is used, because there is no notion of "subsequent frames" for them. 
+
+```python
+left_x, left_y, right_x, right_y, im_search_window = self.find_lane_pixels(im_warped)
+```
+
+The effect of the aforementioned steps on an example image are shown below. The left lane pixels are colored red, the right lane pixels are colored blue, and the search region is shown in green.
+ 
+![search-lane-pixels](output/images/lane-detection/search-lane-pixels.jpg) 
+
+#### 5. Radius of Curvature and Vehicle Offset
+
+Once the pixels from lane lines were found using sliding window or polynomial search, these points were converted into meters using a fixed ratio. Another polynomial was fitted on these points to derive the coefficients. Finally, the [radius of curvature](http://www.intmath.com/applications-differentiation/8-radius-curvature.php) for each lane lines were calculated by using these coefficients. 
+
+The code for the curvature calculation can be found in `calculate_curvature` method in `Lane` class.
+
+As for detecting the offset of the car from the center of the lanes, pixel coordinates of the lanes at the bottom of the image were computed. The distance from the center of the lanes to the center of the image was calculated. This distance was converted to meters using the same ratio as above. The code can be found in `calculate_offset` method in `LaneDetector`.    
+
+#### 6. Mapping lanes
+
+After the coefficients of the best-fit polynomial has been identified, pixel coordinates are generated on the line that lie exactly on the polynomial. A polygon is drawn on another image that is described by these points. This image is warped using inverse of the matrix used for the perspective transformation earlier. The resulting image is then combined with original image to show the area between the lanes. 
+
+Here is an example image showing the lanes in an example image.
+
+![example-mapped-lanes](output/images/lane-detection/test4.result.jpg)
+
+The following image shows the steps described above applied to example images.
+![map-lane-lines](output/images/lane-detection/map-lane-lines.jpg)
 ---
 
 ### Pipeline (video)
 
-#### 1. Provide a link to your final video output.  Your pipeline should perform reasonably well on the entire project video (wobbly lines are ok but no catastrophic failures that would cause the car to drive off the road!).
+#### 1. Final Video Output
 
-TODO: add comment about how I debugged. Comment about thresholding.
+Result of lane detection on the sample videos can be found in [output/videos](output/videos) folder. 
 
-Here's a [link to my video result](./project_video.mp4)
+An example video has also been uploaded to [youtube](http://www.youtube.com/watch?v=bdHtsbaUso8).
 
 ---
 

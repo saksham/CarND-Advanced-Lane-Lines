@@ -47,8 +47,8 @@ def plot_images(images_with_captions, fig_size=(24, 9)):
     plt.subplots_adjust(left=0., right=1, top=1, bottom=0.)
 
 
-def rectangle_pts_inside_image(img, x_offset=200, y_offset=0):
-    height, width, _ = img.shape
+def rectangle_pts_inside_image(img_shape, x_offset=200, y_offset=0):
+    height, width, _ = img_shape
     return [
         [x_offset, height - y_offset], [width - x_offset, height - y_offset],
         [width - x_offset, y_offset], [x_offset, y_offset]
