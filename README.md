@@ -119,7 +119,7 @@ im_warped = self._camera.warp_image(im_thresholded.astype(np.float), self._persp
 
 Here is the result of perspective transformation applied a test image.
 
-<img src="output/images/lane-detection/test2.original.jpg" width="200" /> <img src="output/images/lane-detection/test2.warped.jpg" width="200" />
+<img src="output/images/lane-detection/test2.original.jpg" width="400" /> <img src="output/images/lane-detection/test2.warped.jpg" width="400" />
 
 The code for my perspective transform includes a function called `warper()`, which appears in lines 1 through 8 in the file `example.py` (output_images/examples/example.py) (or, for example, in the 3rd code cell of the IPython notebook).  The `warper()` function takes as inputs an image (`img`), as well as source (`src`) and destination (`dst`) points.  I chose the hardcode the source and destination points in the following manner:
 
