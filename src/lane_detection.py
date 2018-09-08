@@ -33,7 +33,7 @@ class Lane(object):
             return False
 
         if self._last_median_curvature is not None:
-            if curvature > 10 * self._last_median_curvature or curvature < 0.001 * self._last_median_curvature:
+            if curvature > 10 * self._last_median_curvature or curvature < 0.01 * self._last_median_curvature:
                 return False
 
         return True

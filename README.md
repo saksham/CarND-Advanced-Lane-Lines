@@ -175,6 +175,7 @@ Here is an example image showing the lanes in an example image.
 ![example-mapped-lanes](output/images/lane-detection/test4.result.jpg)
 
 The following image shows the steps described above applied to example images.
+
 ![map-lane-lines](output/images/lane-detection/map-lane-lines.jpg)
 ---
 
@@ -193,15 +194,15 @@ An example video has also been uploaded to [youtube](http://www.youtube.com/watc
 Here is a brief discussion about the approach I took, what techniques I used, what worked and why, where the pipeline 
 might fail and how I might improve it if I were going to pursue this project further.
 
-* Speed - Slow (4 frames per second, but this could be higher)
-* Take into account the curvature of the lane lines in relation to one another and compared with the previously aggregated values to find
-  out confidence. We are using curvature calculation to disregard outliers. Similarly, we could probably also integrate 
-  the offset information. All of these could be used to compute a adaptive score, much better than mere
-  average or median to detect outliers. In the harder challenge, the lanes are almost 
-                                          horizontal in some frames even after perspective transform.
-* Due to the use of median filter, the response to lane curvature changes is slightly delayed. This has an impact
- on the performance of the detector on the harder challenge video because the changes are quite big. 
-* The same thresholding values as that for challenge_video worked for the harder challenge to get the lanes in
+Due to changing lighting condition changes, thresholding does not work completely robustly throughout the video. Due to this, the lane lines wobbled every now and then. I maintain a list of last 10 detected image frames in a FIFO queue. Outliers with outlandish radius of curvatures (not within 10m and 100km) are discarded. Also, if the current value is too different from the median (0.01 times or 10 times), then also the best-fit is discarded. For mapping the lanes onto an image and for curvature calculation, the median of the coefficients in the queue are used. Median filtering seems to make the detection much robust. 
+
+Due to the median filter, the response to lane curvature changes is slightly delayed. This has an impact on the performance of the detector on the harder challenge video because the changes are quite big. An idea would be to use all the raw points in all of those images and weigh the error when finding the best-fitting line, with more recent frames weighed more. This could result in better performance especially on winding roads.
+
+Also, the left and right lanes are currently evaluated completely independent of one another. We could take into account the curvature of the lane lines in relation to one another and compared with the previously aggregated values to find out confidence scores. 
+  
+Just like we are currently using curvature calculation to disregard outliers. Similarly, we could probably also integrate the offset information by factoring in the current steering angle. All of these could be used to compute a adaptive score, much better than mere average or median to detect outliers. In the harder challenge, the lanes are almost horizontal in some frames even after perspective transform.
+
+The thresholding values from the challenge_video seem to be able to extract lane pixels for the harder challenge to get the lanes in
 warped binary image, but due to changing lighting conditions, the image is very noisy. Maybe, we could use a notion of
 "noise level" in an image into the lane detection pipeline so that we could disregard best fit lines which might
 succesfully fit a best fit line, but the line might be capturing some other artifact. We could extend this concept a bit further
