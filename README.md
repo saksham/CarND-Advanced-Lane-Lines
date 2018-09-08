@@ -3,7 +3,8 @@
 
 Finding lane lines in a video from camera mounted on a car for Udacity Self-Driving Car Nanodegree program. Here is how the end result looks like. The area inside the lanes are highlighted in green, and the lane detection is applied to a test video.
 
-[![identifying-lane-lines-youtube-video](http://img.youtube.com/vi/bdHtsbaUso8/0.jpg)](http://www.youtube.com/watch?v=bdHtsbaUso8 "Finding Lane Lines for Autonomous Driving")
+[![identifying-lane-lines-youtube-video](http://img.youtube.com/vi/m0tLYsdW4mE/0.jpg)](http://www.youtube.com/watch?v=m0tLYsdW4mE "Finding Lane Lines for Autonomous Driving")
+
 
 ## Table of Contents
 * [The Project](#the-project)
@@ -185,7 +186,7 @@ The following image shows the steps described above applied to example images.
 
 Result of lane detection on the sample videos can be found in [output/videos](output/videos) folder. 
 
-An example video has also been uploaded to [youtube](http://www.youtube.com/watch?v=bdHtsbaUso8).
+An example video has also been uploaded to [youtube](https://youtu.be/m0tLYsdW4mE).
 
 ---
 
@@ -208,3 +209,4 @@ warped binary image, but due to changing lighting conditions, the image is very 
 succesfully fit a best fit line, but the line might be capturing some other artifact. We could extend this concept a bit further
 to **adapting the thresholds** in the image based on the "noise level".
  
+Furthermore, I could achieve processing speed of around 3-4 FPS. The pipeline could probably be optimised a bit more for speed, for instance by not plotting or storing intermediary images. 

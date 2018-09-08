@@ -239,11 +239,10 @@ class LaneDetector(object):
         # Combine the result with the original image
         result = cv2.addWeighted(undistorted, 1, new_warp, 0.3, 0)
 
-        cv2.putText(result, "L. Curvature: %.2f km" % (self._left_lane.curvature_m / 1000), (50, 50),
-                    cv2.FONT_HERSHEY_DUPLEX, 1, (255, 255, 255), 2)
-        cv2.putText(result, "R. Curvature: %.2f km" % (self._right_lane.curvature_m / 1000), (50, 80),
-                    cv2.FONT_HERSHEY_DUPLEX, 1, (255, 255, 255), 2)
-        cv2.putText(result, "C. Position: %.2f m" % offset, (50, 110), cv2.FONT_HERSHEY_DUPLEX, 1, (255, 255, 255), 2)
+        curvatures_text = "Curvatures: (L: %.2f, R: %.2f) km" % (self._left_lane.curvature_m / 1000,
+                                                                 self._right_lane.curvature_m / 1000)
+        cv2.putText(result, curvatures_text, (50, 50), cv2.FONT_HERSHEY_DUPLEX, 1, (255, 255, 255), 2)
+        cv2.putText(result, "Offset: %.2f m" % offset, (50, 80), cv2.FONT_HERSHEY_DUPLEX, 1, (255, 255, 255), 2)
 
         return result
 
