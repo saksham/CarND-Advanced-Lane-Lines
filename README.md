@@ -1,7 +1,7 @@
 ## Advanced Lane Finding Project
 [![Udacity - Self-Driving Car NanoDegree](https://s3.amazonaws.com/udacity-sdc/github/shield-carnd.svg)](http://www.udacity.com/drive)
 
-Finding lane lines in a video from camera mounted on a car for Udacity Self-Driving Car Nanodegree program.
+Finding lane lines in a video from camera mounted on a car for Udacity Self-Driving Car Nanodegree program. Here is how the end result looks like. The area inside the lanes are highlighted in green, and the lane detection is applied to a test video.
 
 [![identifying-lane-lines-youtube-video](http://img.youtube.com/vi/bdHtsbaUso8/0.jpg)](http://www.youtube.com/watch?v=bdHtsbaUso8 "Finding Lane Lines for Autonomous Driving")
 
@@ -79,43 +79,51 @@ distortion correction.
 
 ### Pipeline (single images)
 
-These are the steps taken to find lane markings in a single image. The same function is invoked for processing
-individual frames from the videos later.
+These are the steps taken to find lane markings in a single image. The same function is invoked for processing individual frames from the videos later. The pipeline can be found in `detect` function inside `LaneDetector` class in `src/lane_detection.py`.
 
 
 #### 1. Thresholding to Create Binary Images
 
-A combination of color and gradient thresholds to generate a binary image (in `threshold` function in [Thresholder class in thresholding module](src/thresholding.py)). What worked best in the test video was thresholding based on absolute values and applying Sobel filter on S channel from the [HLS colorspace](https://en.wikipedia.org/wiki/HLS_color_space) and R channel from RGB color space. It turns out that the same thresholds did not work equally well for challenge video. The actual values of the thresholds for each video can be found in the [src/config.py file](src/config.py).
+A combination of color and gradient thresholds to generate a binary image (in `threshold` function in [Thresholder class in thresholding module](src/thresholding.py)). What worked best in the test video was thresholding based on absolute values and applying Sobel filter on S channel from the [HLS colorspace](https://en.wikipedia.org/wiki/HLS_color_space) and R channel from RGB color space. It turns out that the same thresholds did not work equally well for challenge video. The actual values of the thresholds for each video can be found in the [src/config.py](src/config.py) file.
 
-Here is an example of my output for this step operated on all example images.
+Here is an example of my output for this step operated on some test images.
 
 ![Thresholded lane lines](output/images/thresholding/thresholded-examples.jpg)
 
-To see the effect of thresholding for individual images, please refer to [output/images/thresholding folder](output/images/thresholding). The originals and binary images have the corresponding identifiers in their file names.
+To see the effect of thresholding for individual images, please refer to [output/images/thresholding](output/images/thresholding) folder. The originals and binary images have the corresponding identifiers in their file names.
+
+The code which performs thresholding on the test image looks like this inside the `detect` function. Notice that we instantiate `Thresholder` class to encapsulate thresholding logic.
+
+```python
+im_thresholded = self._thresholder.threshold(img)
+```
 
 
 #### 2. Distortion Correction
 
-The distortion introduced in the images due to the lens in camera needs to be corrected. Hence, we need to call 
-`cv2.undistort` inside [undistort function](src/calibration.py) once the camera has been calibrated. Here is an example
-of an undistorted example image.
+The matrices derived from camera calibration is stored in `Camera` object from `src/calibration.py`. The matrices derived from calibration step are used to apply distortion correction using `undistort` function from `Camera` class. The `undistort` function calls `cv2.undistort` for performing the distortion correction.
 
+Below is an example of distortion correction applied to a test image.
 
-#### 3. Describe how (and identify where in your code) you performed a perspective transform and provide an example of a transformed image.
+![undistorted lanes](output/images/lane-detection/distortion-correction-lanes.jpg)
+
+#### 3. Perspective Transform
+
+Source points
+
+For simplicity, the `Camera` class exposes `warp_image` function, which internally performs the distortion correction. Distortion correction is applied by the following lines in the `detect` function in `LaneDetector`.  
+
+```python
+im_warped = self._camera.warp_image(im_thresholded.astype(np.float), self._perspective_transform_mat)
+```
+
+Here is the result of perspective transformation applied a test image.
+
+![undistorted lanes](output/images/lane-detection/test2.original.jpg =200x)![undistorted lanes](output/images/lane-detection/test2.warped.jpg =200x)
 
 The code for my perspective transform includes a function called `warper()`, which appears in lines 1 through 8 in the file `example.py` (output_images/examples/example.py) (or, for example, in the 3rd code cell of the IPython notebook).  The `warper()` function takes as inputs an image (`img`), as well as source (`src`) and destination (`dst`) points.  I chose the hardcode the source and destination points in the following manner:
 
 ```python
-src = np.float32(
-    [[(img_size[0] / 2) - 55, img_size[1] / 2 + 100],
-    [((img_size[0] / 6) - 10), img_size[1]],
-    [(img_size[0] * 5 / 6) + 60, img_size[1]],
-    [(img_size[0] / 2 + 55), img_size[1] / 2 + 100]])
-dst = np.float32(
-    [[(img_size[0] / 4), 0],
-    [(img_size[0] / 4), img_size[1]],
-    [(img_size[0] * 3 / 4), img_size[1]],
-    [(img_size[0] * 3 / 4), 0]])
 ```
 
 This resulted in the following source and destination points:
