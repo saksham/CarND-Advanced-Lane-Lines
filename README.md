@@ -32,7 +32,7 @@ This README is structured around the [Rubric](https://review.udacity.com/#!/rubr
 ## What's in this Repo
 
 ```
-├── example.ipynb: Main notebook for exploration and showcasing
+├── main.ipynb: Main notebook for exploration and showcasing
 ├── data: contains calibration images, example images and videos
 ├── output: result of processing
 ├── scripts: helper scripts for running/testing code snippets
